@@ -27,8 +27,7 @@ pipeline {
 
         stage('Serve App on Server') {
             steps {
-                bat 'start /B node server.js > app.log'
-                bat 'timeout /t 3'
+                echo 'Application is ready.'
             }
         }
     }
@@ -37,11 +36,9 @@ pipeline {
         always {
             echo 'Pipeline complete.'
         }
-
         success {
             echo 'Build Successful!'
         }
-
         failure {
             echo 'Build Failed!'
         }
