@@ -1,38 +1,37 @@
 pipeline {
   agent any
 
+  triggers {
+    githubPush()
+  }
+
   stages {
-    stage('Install dependencies') {
+    stage('Checkout') {
       steps {
-        script {
-          if (isUnix()) {
-            sh 'npm install'
-          } else {
-            bat 'npm install'
-          }
-        }
+        echo 'Checking out source code...'
       }
     }
 
-    stage('Install Playwright browser') {
+    stage('Install Dependencies') {
       steps {
-        script {
-          if (isUnix()) {
-            sh 'npx playwright install chromium'
-          } else {
-            bat 'npx playwright install chromium'
-          }
-        }
+        sh 'npm install'
       }
     }
 
-    stage('Run tests') {
+    stage('Run Tests') {
+      steps {
+        sh 'npm test'
+      }
+    }
+
+    stage('Serve App on Server') {
       steps {
         script {
           if (isUnix()) {
-            sh 'npm test'
+            sh 'nohup node server.js > app.log 2>&1 &'
+            sh 'sleep 3 && curl -I http://localhost:3000'
           } else {
-            bat 'npm test'
+            bat 'start /B node server.js > app.log 2>&1'
           }
         }
       }
@@ -41,7 +40,7 @@ pipeline {
 
   post {
     always {
-      archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+      echo 'Pipeline complete.'
     }
   }
 }

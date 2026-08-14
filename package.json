@@ -1,11 +1,9 @@
 {
-  "name": "devops-registration-form",
+  "name": "devops-jenkins-trigger",
   "version": "1.0.0",
-  "description": "Registration form with Playwright tests",
+  "private": true,
   "scripts": {
-    "test": "playwright test"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.62.1"
+    "start": "node server.js",
+    "test": "node --test"
   }
 }

@@ -2,8 +2,10 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const rootDir = __dirname;
-const mimeTypes = {
+const PORT = process.env.PORT || 3000;
+const ROOT = __dirname;
+
+const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -12,32 +14,35 @@ const mimeTypes = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
 };
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url === '/' ? '/index.html' : req.url;
-  const safePath = path.join(rootDir, decodeURIComponent(requestPath));
+  const reqPath = req.url === '/' ? '/index.html' : req.url;
+  const safePath = path.normalize(reqPath).replace(/^\.+[\\/]+/, '');
+  const filePath = path.join(ROOT, safePath);
 
-  if (!safePath.startsWith(rootDir)) {
-    res.writeHead(403);
+  if (!filePath.startsWith(ROOT)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Forbidden');
     return;
   }
 
-  fs.readFile(safePath, (err, data) => {
+  fs.readFile(filePath, (err, data) => {
     if (err) {
-      res.writeHead(404);
-      res.end('Not found');
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('File not found');
       return;
     }
 
-    const ext = path.extname(safePath).toLowerCase();
-    const contentType = mimeTypes[ext] || 'application/octet-stream';
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+
     res.writeHead(200, { 'Content-Type': contentType });
     res.end(data);
   });
 });
 
-server.listen(3000, '127.0.0.1', () => {
-  console.log('Static server running at http://127.0.0.1:3000');
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
