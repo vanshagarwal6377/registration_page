@@ -68,9 +68,22 @@ button:hover {
   background: #1a5edb;
 }
 
-.message {
+.message,
+.test-result {
   margin-top: 10px;
   text-align: center;
-  color: green;
   font-weight: bold;
+}
+
+.test-result {
+  color: #1a5edb;
+}
+
+.run-tests-button {
+  margin-top: 12px;
+  background: #34a853;
+}
+
+.run-tests-button:hover {
+  background: #2c8c44;
 }
